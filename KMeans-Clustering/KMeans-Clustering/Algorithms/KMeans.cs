@@ -44,7 +44,7 @@ namespace KMeansClustering.Algorithms
                     Centroids.Add(observation);
                     Clusters.Add(new Cluster(i, observation));
                 }
-
+                
                 Parallel.ForEach(Observations, (observation) =>
                 {
                     lock (observation)
@@ -53,7 +53,7 @@ namespace KMeansClustering.Algorithms
                     }
                 });
 
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     int counter = 0;
                     for (int j = 0; j < Clusters.Count; j++)

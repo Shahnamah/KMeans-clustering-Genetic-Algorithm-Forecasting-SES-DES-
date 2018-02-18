@@ -11,13 +11,13 @@ namespace KMeans_Clustering
         {
             var stopwatch = Stopwatch.StartNew();
 
-            KMeans kMeans = new KMeans(20, 4);
+            KMeans kMeans = new KMeans(300, 4);
 
             kMeans.CreateClusters();
             kMeans.PrintClusters();
 
             stopwatch.Stop();
-            Console.WriteLine($"Elapsed time: {stopwatch.Elapsed.Milliseconds} ms.");
+            Console.WriteLine($"Elapsed time: {stopwatch.Elapsed.TotalSeconds} seconds.");
 
             Console.Read();
         }

@@ -59,7 +59,7 @@ namespace KMeansClustering.Data
 
                             var observation = new Observation { Id = id, Items = tempValues };
                             Observations.Add(observation);
-                            //id++;
+                            id++;
                         }
                     }
                 }

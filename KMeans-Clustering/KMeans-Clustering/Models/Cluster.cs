@@ -40,7 +40,10 @@ namespace KMeansClustering.Models
 
                 foreach (var obs in Observations)
                 {
-                    sum += obs.Items[i];
+                    if (obs != null)
+                    {
+                        sum += obs.Items[i];
+                    }
                 }
 
                 if (sum > 0)
