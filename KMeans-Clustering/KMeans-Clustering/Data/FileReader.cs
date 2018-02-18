@@ -20,8 +20,6 @@ namespace KMeansClustering.Data
         {
             get
             {
-                var watch = Stopwatch.StartNew();
-
                 try
                 {
                     using (var reader = new StreamReader("Data/WineData.csv"))
@@ -40,21 +38,18 @@ namespace KMeansClustering.Data
                             }
                             data.Add(templist);
                         }
-
-                        int properties1 = data[0].Count;
-                        for (int i = 0; i < properties1; i++)
+                        
+                        for (int i = 0; i < data[0].Count; i++)
                         {
                             var templist = new List<double>();
-                            foreach (var list in data)
-                            {
-                                templist.Add(list[i]);
-                            }
+
+                            data.ForEach(list => templist.Add(list[i]));
                             clients.Add(templist);
                         }
 
+                        int id = 1;
                         foreach (var client in clients)
                         {
-                            int id = 1;
                             var values = client;
                             var tempValues = new Dictionary<int, double>();
                             for (int i = 0; i < values.Count; i++)
@@ -64,6 +59,7 @@ namespace KMeansClustering.Data
 
                             var observation = new Observation { Id = id, Items = tempValues };
                             Observations.Add(observation);
+                            id++;
                         }
                     }
                 }
@@ -71,9 +67,6 @@ namespace KMeansClustering.Data
                 {
                     Console.WriteLine(exception.Message);
                 }
-
-                watch.Stop();
-                Console.WriteLine($"Getting the observations took {watch.Elapsed.Milliseconds} ms to finish.");
                 return Observations;
             }
         }
