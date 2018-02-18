@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace KMeansClustering.Models
 {
@@ -41,6 +42,7 @@ namespace KMeansClustering.Models
                 {
                     sum += obs.Items[i];
                 }
+
                 if (sum > 0)
                     Centroid.Items[i] = (sum / Observations.Count);
                 else
@@ -50,7 +52,7 @@ namespace KMeansClustering.Models
 
         public double SumOfError()
         {
-            double sum = 0;
+            double sum = 0.0;
             for (int item = 0; item < Centroid.Items.Keys.Count; item++)
             {
                 for (int obs = 0; obs < Observations.Count; obs++)

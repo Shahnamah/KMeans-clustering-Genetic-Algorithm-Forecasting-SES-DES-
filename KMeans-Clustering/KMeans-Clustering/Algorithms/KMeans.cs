@@ -12,52 +12,46 @@ namespace KMeansClustering.Algorithms
     {
         private readonly int iterations;
         private readonly int totalClusters;
+
+        private List<Observation> Centroids;
+        private List<Cluster> Clusters;
         private Result result;
+        private Random random = new Random();
 
-        private List<Observation> Centroids{ get; set; }
-        private List<Cluster> Clusters{ get; set; }
-
-        private Observation[] Observations { get; }
+        private List<Observation> Observations;
 
         public KMeans(int iterations, int totalClusters)
         {
             this.iterations = iterations;
             this.totalClusters = totalClusters;
-
-            Centroids = new List<Observation>();
-            Clusters = new List<Cluster>();
-
-            Observations = new FileReader().GetObservations.ToArray();
+            Observations = new FileReader().GetObservations;
         }
 
+        /// <summary>
+        /// Creates the clusters.
+        /// </summary>
+        /// <param name="observations"></param>
         public void CreateClusters()
         {
-            for (int iteration = 0; iteration <= this.iterations; iteration++)
+            for (int iteration = 0; iteration <= iterations; iteration++)
             {
                 Clusters = new List<Cluster>();
                 Centroids = new List<Observation>();
-
                 for (int i = 0; i < totalClusters; i++)
                 {
-                    int clusterNumber = new Random().Next(Observations.Length);
-                    var observation = new Observation() { Id = clusterNumber + 50, Items = Observations[clusterNumber].Items };
+                    int clusterNumber = random.Next(Observations.Count);
+                    Observation observation = new Observation { Id = clusterNumber + 50, Items = new Dictionary<int, double>(Observations[clusterNumber].Items) };
                     Centroids.Add(observation);
                     Clusters.Add(new Cluster(i, observation));
                 }
 
-                //Parallel.ForEach(Observations, (observation) =>
-                //{
-                //    lock (observation)
-                //    {
-                //        CalculateDistance(observation);
-                //    }
-                //});
-
-                foreach (var observation in Observations)
+                Parallel.ForEach(Observations, (observation) =>
                 {
-
-                    CalculateDistance(observation);
-                }
+                    lock (observation)
+                    {
+                        CalculateDistance(observation);
+                    }
+                });
 
                 for (int i = 0; i < 10; i++)
                 {
@@ -72,26 +66,23 @@ namespace KMeansClustering.Algorithms
 
                     for (int x = 0; x < Clusters.Count; x++)
                     {
-                        for (int y = 0; y < Observations.Length; y++)
+                        Parallel.ForEach(Observations, (observation) =>
                         {
-                            CalculateDistance(Observations[y]);
-                        }
-
-                        //Parallel.ForEach(Observations, (observation) =>
-                        //{
-                        //    lock (observation)
-                        //    {
-                        //        CalculateDistance(observation);
-                        //    }
-                        //});
+                            lock (observation)
+                            {
+                                CalculateDistance(observation);
+                            }
+                        });
                     }
                 }
-
                 double error = 0;
                 for (int i = 0; i < Clusters.Count; i++)
                 {
                     error += Clusters[i].SumOfError();
                 }
+
+                if (Double.IsNaN(error))
+                    continue;
 
                 if (result != null)
                 {
@@ -99,37 +90,47 @@ namespace KMeansClustering.Algorithms
                         result = new Result(error, Clusters);
                 }
                 else
-                {
                     result = new Result(error, Clusters);
-                }
             }
             PrintResults(result);
         }
 
+        /// <summary>
+        /// Computes the distance between the observations.
+        /// </summary>
+        /// <param name="observation"></param>
+        /// <param name="numberOfClusters"></param>
         private void CalculateDistance(Observation observation)
         {
             double distance = 0;
-            var centroidDem = new Dictionary<int, double>();
+            Dictionary<int, double> centroidDem = new Dictionary<int, double>();
             for (int i = 0; i < Centroids.Count; i++)
             {
                 distance = CalculateEuclideanDistance(observation, Centroids[i]);
                 centroidDem.Add(i, distance);
             }
 
-            int minimumDistanceKey = centroidDem.OrderBy(c => c.Value).First().Key;
+            int minimumDistanceKey = centroidDem.OrderBy(x => x.Value).First().Key;
             if (!Clusters[minimumDistanceKey].Observations.Contains(observation))
             {
                 Clusters[minimumDistanceKey].Observations.Add(observation);
             }
         }
 
+        /// <summary>
+        /// Calculates the Euclidean distance between an observation and the centroid.
+        /// </summary>
+        /// <param name="observation"></param>
+        /// <param name="centroid"></param>
+        /// <returns></returns>
         private double CalculateEuclideanDistance(Observation observation, Observation centroid)
         {
             double distance = 0;
-            for(int i = 0; i < observation.Items.Count; i++)
+            for (int i = 0; i < observation.Items.Count; i++)
             {
                 distance += Math.Pow(observation.Items[i] - centroid.Items[i], 2.00);
             }
+
             distance = Math.Sqrt(distance);
             return distance;
         }
@@ -144,6 +145,7 @@ namespace KMeansClustering.Algorithms
                 {
                     Console.WriteLine("Item number {0} sold {1} times", item.Key, item.Value);
                 }
+                List<Observation> cs = result.Clusters[i].Observations;
                 Console.WriteLine("");
             }
             Console.WriteLine("Error is: {0}", result.Error);
@@ -153,7 +155,7 @@ namespace KMeansClustering.Algorithms
         {
             for (int i = 0; i < Clusters.Count; i++)
             {
-                Console.WriteLine("ClusterNumber: {0} has {1} observationpoints", Clusters[i].ClusterNumber, Clusters[i].Observations.Count);
+                Console.WriteLine("ClusterNumber: {0} has {1} observationpoints", Clusters[i].ClusterNumber, Clusters[i].Observations.Count());
             }
         }
     }

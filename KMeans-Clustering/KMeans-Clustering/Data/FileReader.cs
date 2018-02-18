@@ -30,7 +30,7 @@ namespace KMeansClustering.Data
                         string line;
                         while ((line = reader.ReadLine()) != null)
                         {
-                            var properties = reader.ReadLine().Split(',');
+                            var properties = line.Split(',');
                             var templist = new List<double>();
                             foreach (var prop in properties)
                             {
@@ -59,7 +59,7 @@ namespace KMeansClustering.Data
 
                             var observation = new Observation { Id = id, Items = tempValues };
                             Observations.Add(observation);
-                            id++;
+                            //id++;
                         }
                     }
                 }

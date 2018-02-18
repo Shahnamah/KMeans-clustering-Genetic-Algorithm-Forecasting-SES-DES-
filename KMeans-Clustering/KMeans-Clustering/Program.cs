@@ -11,7 +11,7 @@ namespace KMeans_Clustering
         {
             var stopwatch = Stopwatch.StartNew();
 
-            KMeans kMeans = new KMeans(40, 5);
+            KMeans kMeans = new KMeans(20, 4);
 
             kMeans.CreateClusters();
             kMeans.PrintClusters();
