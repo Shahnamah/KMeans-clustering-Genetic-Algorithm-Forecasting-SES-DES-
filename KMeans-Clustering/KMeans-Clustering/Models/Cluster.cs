@@ -56,11 +56,16 @@ namespace KMeansClustering.Models
         public double SumOfError()
         {
             double sum = 0.0;
+
+            //for each item in the Items of this centroid
             for (int item = 0; item < Centroid.Items.Keys.Count; item++)
             {
+                //for each observation in Observations within the cluster
                 for (int obs = 0; obs < Observations.Count; obs++)
                 {
+                    //get the value of the observation item
                     double valueObservation = Observations[obs].Items[item];
+                    //and sum it up on the total sum
                     sum += Math.Pow((Centroid.Items[item] - valueObservation), 2.00);
                 }
             }

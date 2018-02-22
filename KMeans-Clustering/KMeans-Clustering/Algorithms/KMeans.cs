@@ -33,29 +33,35 @@ namespace KMeansClustering.Algorithms
         /// <param name="observations"></param>
         public void CreateClusters()
         {
+            //for each iteration
             for (int iteration = 0; iteration <= iterations; iteration++)
             {
                 Clusters = new List<Cluster>();
                 Centroids = new List<Observation>();
+                //for each cluster index in total clusters
                 for (int i = 0; i < totalClusters; i++)
                 {
+                    //create a random clusternumber
                     int clusterNumber = random.Next(Observations.Count);
+                    //create a new random centroid
                     Observation observation = new Observation { Id = clusterNumber + 50, Items = new Dictionary<int, double>(Observations[clusterNumber].Items) };
                     Centroids.Add(observation);
                     Clusters.Add(new Cluster(i, observation));
                 }
-                
-                Parallel.ForEach(Observations, (observation) =>
+
+                //multi-threading, for each observation, calculate the distance from the observation to all the existing centroids, and assign the observation to the nearest centroid.
+                Parallel.For(0, Observations.Count, index =>
                 {
-                    lock (observation)
+                    lock (Observations[index])
                     {
-                        CalculateDistance(observation);
+                        CalculateDistance(Observations[index]);
                     }
                 });
-
-                for (int i = 0; i < 4; i++)
+                
+                for (int i = 0; i < 5; i++)
                 {
                     int counter = 0;
+                    //for each cluster, recalculate the center and clear all observations.
                     for (int j = 0; j < Clusters.Count; j++)
                     {
                         Clusters[j].RecalculateCenter();
@@ -63,19 +69,22 @@ namespace KMeansClustering.Algorithms
                         Clusters[counter] = Clusters[j];
                         counter++;
                     }
-
+                    
                     for (int x = 0; x < Clusters.Count; x++)
                     {
-                        Parallel.ForEach(Observations, (observation) =>
+                        //for each cluster with new centroids, again calculate the distances from the observations to the new centroids and assign the observations to the nearest centroids.
+                        Parallel.For(0, Observations.Count, index =>
                         {
-                            lock (observation)
+                            lock (Observations[index])
                             {
-                                CalculateDistance(observation);
+                                CalculateDistance(Observations[index]);
                             }
                         });
                     }
                 }
+
                 double error = 0;
+                //sum all the errors of the clusters
                 for (int i = 0; i < Clusters.Count; i++)
                 {
                     error += Clusters[i].SumOfError();
