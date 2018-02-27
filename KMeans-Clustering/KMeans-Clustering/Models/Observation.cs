@@ -13,10 +13,5 @@ namespace KMeansClustering.Models
         {
             Items = new Dictionary<int, double>();
         }
-
-        public void UpdateItems(int key, double value)
-        {
-            Items[key] = value;
-        }
     }
 }

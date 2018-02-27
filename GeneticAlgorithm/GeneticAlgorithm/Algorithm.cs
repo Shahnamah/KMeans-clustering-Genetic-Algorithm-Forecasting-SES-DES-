@@ -87,9 +87,9 @@ namespace GeneticAlgorithm
             // recompute the fitnesses on the final population and return the best individual
             double[] finalFitnesses = Enumerable.Range(0, populationSize).Select(i => ComputeFitness(currentPopulation[i])).ToArray();
 
-            double avg = finalFitnesses.Sum();
+            double avg = Math.Abs(finalFitnesses.Average());
 
-            avg = Math.Abs(avg) / finalFitnesses.Length;
+            //avg = Math.Abs(avg) / finalFitnesses.Length;
             Console.WriteLine("Fitness AVG");
             Console.WriteLine(Math.Abs(avg));
 

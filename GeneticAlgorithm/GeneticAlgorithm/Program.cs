@@ -18,14 +18,14 @@ namespace GeneticAlgorithm
             */
 
             //Console.WriteLine("What is the crossoverRate");
-            double crossoverRate = 0.5;
+            double crossoverRate = 0.8;
             //			double.TryParse (Console.ReadLine (), out crossoverRate);
             //Console.WriteLine("What is the mutationRate");
-            double mutationRate = 0.5;
+            double mutationRate = 0.05;
             //			double.TryParse(Console.ReadLine(),out mutationRate);
             bool elitism = true;
             //Console.WriteLine("What is the populationSize");
-            int populationSize = 4;
+            int populationSize = 20;
             //				Convert.ToInt32(Console.ReadLine());
 
             //Console.WriteLine("What is the numIterations");
@@ -50,12 +50,20 @@ namespace GeneticAlgorithm
         private static string CreateIndividual()
         {
             string individual = "";
-            Random random = new Random();
+            var random = new Random();
             for (int i = 0; i < 5; i++)
             {
                 individual = individual + random.Next(0, 2);
             }
             System.Threading.Thread.Sleep(50);
+            //int lol = Convert.ToInt32("10001", 2);
+            //int inde = Convert.ToInt32(individual, 2);
+
+
+            //byte a = 13;
+            //byte b = 10;
+            //string yourByteString = Convert.ToString(a, 2).PadLeft(5, '0');
+            //int afaf = Convert.ToInt32(yourByteString, 2);
             return individual;
         }
 
@@ -72,11 +80,14 @@ namespace GeneticAlgorithm
             var tempFitnesses = new List<double>();
             var probability = new double[length];
             var parents = new string[2];
-            Random random = new Random();
+            var random = new Random();
 
             double lowestFitness = fitnesses.OrderBy(x => x).First();
 
-            fitnesses.ToList().ForEach(f => tempFitnesses.Add(f + Math.Abs(lowestFitness)));
+            fitnesses.ToList()
+                .ForEach(f => 
+                    tempFitnesses.Add(f + Math.Abs(lowestFitness))
+                );
 
             for (int i = 0; i < 2; i++)
             {
@@ -132,13 +143,9 @@ namespace GeneticAlgorithm
                 var strBuilder = new StringBuilder(individual);
                 Char value = strBuilder[placeMutation];
                 if (value == '1')
-                {
                     strBuilder[placeMutation] = '0';
-                }
                 else
-                {
                     strBuilder[placeMutation] = '1';
-                }
                 return strBuilder.ToString();
             }
             return individual;
