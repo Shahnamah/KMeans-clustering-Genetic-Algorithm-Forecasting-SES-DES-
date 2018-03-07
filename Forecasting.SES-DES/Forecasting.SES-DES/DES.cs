@@ -16,10 +16,10 @@ namespace Forecasting.SES_DES
         private const string SMALLEST_SSE = "SmallestSse";
         private const string TREND_LIST = "TrendList";
         private const string SMOOTHING_LIST = "SmoothingList";
-        private double[] demands;
-        private int forecastingTimeInMonths;
-        Label yLabel, xLabel, chartTitle;
-        Chart chart1;
+        private readonly double[] demands;
+        private readonly int forecastingTimeInMonths;
+        private readonly Label yLabel, xLabel, chartTitle;
+        private readonly Chart chart1;
 
         public DES(Chart chart1, Label yLabel, Label xLabel, Label chartTitle, int forecastingTimeInMonths)
         {
@@ -34,13 +34,34 @@ namespace Forecasting.SES_DES
         }
         private void InitializeSeries()
         {
-            var swordsSerie = new Series { Name = "Swords data", Color = Color.Black, ChartType = SeriesChartType.Line, MarkerStyle = MarkerStyle.Circle, MarkerSize = 6 };
-            var smoothingSerie = new Series { Name = "Smoothing", Color = Color.Red, ChartType = SeriesChartType.Line, MarkerStyle = MarkerStyle.Circle, MarkerSize = 6 };
-            var forecastSerie = new Series { Name = "Forecast", Color = Color.Blue, ChartType = SeriesChartType.Line, MarkerStyle = MarkerStyle.Circle, MarkerSize = 6 };
+            var swordsSerie = new Series
+            {
+                Name = "Swords data",
+                Color = Color.Black,
+                ChartType = SeriesChartType.Line,
+                MarkerStyle = MarkerStyle.Circle,
+                MarkerSize = 6
+            };
+            var smoothingSerie = new Series
+            {
+                Name = "Smoothing",
+                Color = Color.Red,
+                ChartType = SeriesChartType.Line,
+                MarkerStyle = MarkerStyle.Circle,
+                MarkerSize = 6
+            };
+            var forecastSerie = new Series
+            {
+                Name = "Forecast",
+                Color = Color.Blue,
+                ChartType = SeriesChartType.Line,
+                MarkerStyle = MarkerStyle.Circle,
+                MarkerSize = 6
+            };
             
             var alphaBetaSse = ComputeAlphaBetaSSE();
             var smoothSeq = ComputeTrendSmoothing(alphaBetaSse[BEST_ALPHA], alphaBetaSse[BEST_BETA]);
-            var finalForecastSeq = ComputeFinalForecast(smoothSeq[SMOOTHING_LIST], smoothSeq[TREND_LIST], forecastingTimeInMonths);
+            var finalForecastSeq = ComputeFinalForecast(smoothSeq[SMOOTHING_LIST], smoothSeq[TREND_LIST], forecastingTimeInMonths).ToArray();
 
             for (int i = 0; i < demands.Length; i++)
             {
@@ -50,14 +71,14 @@ namespace Forecasting.SES_DES
             {
                 smoothingSerie.Points.AddXY(i + 1, smoothSeq[SMOOTHING_LIST][i]);
             }
-            for (int i = 0; i < finalForecastSeq.Count; i++)
+            for (int i = 0; i < finalForecastSeq.Length; i++)
             {
                 forecastSerie.Points.AddXY(smoothSeq[SMOOTHING_LIST].Length + 1 + i, finalForecastSeq[i]);
             }
 
             xLabel.Text = "Months";
             yLabel.Text = "Demands";
-            chartTitle.Text = string.Format("Sword Forecasting DES, Alpha {0}, Beta {1} and SSE {2}", alphaBetaSse[BEST_ALPHA], alphaBetaSse[BEST_BETA], alphaBetaSse[SMALLEST_SSE]);
+            chartTitle.Text = $"Sword Forecasting DES, Alpha {alphaBetaSse[BEST_ALPHA]}, Beta {alphaBetaSse[BEST_BETA]} and SSE {alphaBetaSse[SMALLEST_SSE]}";
             chartTitle.Font = new Font("Verdana", 20);
 
             if (chart1.Series.Any())
@@ -79,8 +100,9 @@ namespace Forecasting.SES_DES
             int indexTrendSmooth = 1;
             for (int i = 1; i < demands.Length; i++)
             {
-                double smoothValue = alpha * demands[indexTrendSmooth] + (1 - alpha) * (smoothingList[indexTrendSmooth - 1]
-                        + trendList[indexTrendSmooth - 1]);
+                double smoothValue = alpha * demands[indexTrendSmooth] + (1 - alpha) 
+                                     * (smoothingList[indexTrendSmooth - 1]
+                                     + trendList[indexTrendSmooth - 1]);
                 smoothingList.Add(smoothValue);
                 double trendValue = beta * (smoothingList[indexTrendSmooth] - smoothingList[indexTrendSmooth - 1])
                         + (1 - beta) * trendList[indexTrendSmooth - 1];
@@ -92,16 +114,14 @@ namespace Forecasting.SES_DES
             return trendAndSmoothingList;
         }
 
-        private double[] ComputeInitialForecasting(double[] smoothSeq, double[] trendSeq)
+        private IEnumerable<double> ComputeInitialForecasting(double[] smoothSeq, double[] trendSeq)
         {
-            var initialForecasting = new List<double>();
             //The initial Forecasting begins at t = 3 so in order to compute that
             //we need to begin at i = 1 which is t = 2 for the dataSeq (see week5.pdf slide 21)
             for (int i = 1; i < smoothSeq.Length; i++)
             {
-                initialForecasting.Add(smoothSeq[i] + trendSeq[i]);
+                yield return smoothSeq[i] + trendSeq[i];
             }
-            return initialForecasting.ToArray();
         }
 
         private double ComputeSse(double[] forecastSeq)
@@ -110,21 +130,19 @@ namespace Forecasting.SES_DES
             double sse = 0;
             for (int i = 2; i < demands.Length; i++)
             {
-                sse += Math.Pow((demands[i] - forecastSeq[i - 2]), 2);
+                sse += Math.Pow(demands[i] - forecastSeq[i - 2], 2);
             }
             return Math.Sqrt(sse / (forecastSeq.Length - 2));
         }
-
-        private List<Double> ComputeFinalForecast(double[] smoothSeq, double[] trendSeq, int timeInMonth)
+        
+        private IEnumerable<double> ComputeFinalForecast(double[] smoothSeq, double[] trendSeq, int timeInMonth)
         {
-            var forecast = new List<double>();
             double s = smoothSeq[smoothSeq.Length - 1];
             double b = trendSeq[trendSeq.Length - 1];
             for (int i = 1; i <= timeInMonth; i++)
             {
-                forecast.Add(s + (i * b));
+                yield return s + (i * b);
             }
-            return forecast;
         }
 
         private Dictionary<string, double> ComputeAlphaBetaSSE()
@@ -138,7 +156,7 @@ namespace Forecasting.SES_DES
                 for (double beta = 0.001; beta < 1; beta += 0.001)
                 {
                     Dictionary<string, double[]> trendAndSmoothSeq = ComputeTrendSmoothing(alpha, beta);//pos 0 is trend/ pos 1 is smooth
-                    double[] initialForecastSeq = ComputeInitialForecasting(trendAndSmoothSeq[SMOOTHING_LIST], trendAndSmoothSeq[TREND_LIST]);
+                    double[] initialForecastSeq = ComputeInitialForecasting(trendAndSmoothSeq[SMOOTHING_LIST], trendAndSmoothSeq[TREND_LIST]).ToArray();
                     double sse = ComputeSse(initialForecastSeq);
                     if (sse < smallestSSE)
                     {

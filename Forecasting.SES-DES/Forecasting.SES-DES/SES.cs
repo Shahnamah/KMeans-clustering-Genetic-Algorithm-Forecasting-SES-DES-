@@ -11,11 +11,11 @@ namespace Forecasting.SES_DES
 {
     public class SES
     {
-        private const string BEST_ALPHA = "BestAlpha";
-        private const string SMALLEST_SSE = "SmallestSse";
-        private double[] demands;
-        Label yLabel, xLabel, chartTitle;
-        Chart chart1;
+        private const string BestAlpha = "BestAlpha";
+        private const string SmallestSse = "SmallestSse";
+        private readonly double[] demands;
+        private readonly Label yLabel, xLabel, chartTitle;
+        private readonly Chart chart1;
 
         public SES(Chart chart1, Label yLabel, Label xLabel, Label chartTitle)
         {
@@ -29,13 +29,34 @@ namespace Forecasting.SES_DES
 
         private void InitializeSeries()
         {
-            var swordsSerie = new Series { Name = "Swords data", Color = Color.Black, ChartType = SeriesChartType.Line, MarkerStyle = MarkerStyle.Circle,MarkerSize = 6};
-            var smoothingSerie = new Series { Name = "Smoothing", Color = Color.Red, ChartType = SeriesChartType.Line, MarkerStyle = MarkerStyle.Circle, MarkerSize = 6 };
-            var forecastSerie = new Series { Name = "Forecast", Color = Color.Blue, ChartType = SeriesChartType.Line, MarkerStyle = MarkerStyle.Circle, MarkerSize = 6 };
+            var swordsSerie = new Series
+            {
+                Name = "Swords data",
+                Color = Color.Black,
+                ChartType = SeriesChartType.Line,
+                MarkerStyle = MarkerStyle.Circle,
+                MarkerSize = 6
+            };
+            var smoothingSerie = new Series
+            {
+                Name = "Smoothing",
+                Color = Color.Red,
+                ChartType = SeriesChartType.Line,
+                MarkerStyle = MarkerStyle.Circle,
+                MarkerSize = 6
+            };
+            var forecastSerie = new Series
+            {
+                Name = "Forecast",
+                Color = Color.Blue,
+                ChartType = SeriesChartType.Line,
+                MarkerStyle = MarkerStyle.Circle,
+                MarkerSize = 6
+            };
 
             Dictionary<string, double> alphaAndSse = ComputeAlphaAndSse();
-            List<double> smoothingSequence = ComputeSmoothing(alphaAndSse[BEST_ALPHA]);
-            List<double> forecastingSequence = ComputeForecasting(smoothingSequence, alphaAndSse[BEST_ALPHA], 12);
+            List<double> smoothingSequence = ComputeSmoothing(alphaAndSse[BestAlpha]);
+            List<double> forecastingSequence = ComputeForecasting(smoothingSequence, alphaAndSse[BestAlpha], 12);
 
             for (int i = 0; i < demands.Length; i++)
             {
@@ -54,7 +75,7 @@ namespace Forecasting.SES_DES
 
             xLabel.Text = "Months";
             yLabel.Text = "Demands";
-            chartTitle.Text = $"Sword Forecasting SES, best Alpha {alphaAndSse[BEST_ALPHA]}, SSE {alphaAndSse[SMALLEST_SSE]}";
+            chartTitle.Text = $"Sword Forecasting SES, best Alpha {alphaAndSse[BestAlpha]}, SSE {alphaAndSse[SmallestSse]}";
             chartTitle.Font = new Font("Verdana", 20);
 
             if (chart1.Series.Any())
@@ -103,8 +124,8 @@ namespace Forecasting.SES_DES
                     bestAlpha = alpha;
                 }
             }
-            errorAndAlpha.Add(BEST_ALPHA, bestAlpha); // first position is for the alpha value
-            errorAndAlpha.Add(SMALLEST_SSE, smallestSSE);// second position is for the sse value
+            errorAndAlpha.Add(BestAlpha, bestAlpha); // first position is for the alpha value
+            errorAndAlpha.Add(SmallestSse, smallestSSE);// second position is for the sse value
             return errorAndAlpha;
         }
 
