@@ -38,6 +38,8 @@
             this.yLabel = new System.Windows.Forms.Label();
             this.xLabel = new System.Windows.Forms.Label();
             this.chartTitle = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart2)).BeginInit();
             this.SuspendLayout();
@@ -48,7 +50,7 @@
             this.chart1.ChartAreas.Add(chartArea3);
             legend3.Name = "Legend1";
             this.chart1.Legends.Add(legend3);
-            this.chart1.Location = new System.Drawing.Point(136, 69);
+            this.chart1.Location = new System.Drawing.Point(164, 84);
             this.chart1.Name = "chart1";
             this.chart1.Size = new System.Drawing.Size(1207, 555);
             this.chart1.TabIndex = 0;
@@ -81,7 +83,7 @@
             // xLabel
             // 
             this.xLabel.AutoSize = true;
-            this.xLabel.Location = new System.Drawing.Point(668, 640);
+            this.xLabel.Location = new System.Drawing.Point(694, 663);
             this.xLabel.Name = "xLabel";
             this.xLabel.Size = new System.Drawing.Size(35, 13);
             this.xLabel.TabIndex = 3;
@@ -96,11 +98,33 @@
             this.chartTitle.TabIndex = 4;
             this.chartTitle.Text = "sadasdas";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(12, 101);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(135, 27);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "Compute SES";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(33, 134);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(104, 29);
+            this.button2.TabIndex = 6;
+            this.button2.Text = "Compute DES";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1451, 697);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.chartTitle);
             this.Controls.Add(this.xLabel);
             this.Controls.Add(this.yLabel);
@@ -122,6 +146,8 @@
         private System.Windows.Forms.Label yLabel;
         private System.Windows.Forms.Label xLabel;
         private System.Windows.Forms.Label chartTitle;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
     }
 }
 

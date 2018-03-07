@@ -16,9 +16,19 @@ namespace Forecasting.SES_DES
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
             //SES
             new SES(chart1, yLabel, xLabel, chartTitle);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
             //DES
+            new DES(chart1, yLabel, xLabel, chartTitle, 12);
         }
     }
 }

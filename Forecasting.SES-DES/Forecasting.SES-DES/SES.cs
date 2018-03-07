@@ -11,6 +11,8 @@ namespace Forecasting.SES_DES
 {
     public class SES
     {
+        private const string BEST_ALPHA = "BestAlpha";
+        private const string SMALLEST_SSE = "SmallestSse";
         private List<double> demands = new List<double>();
         Label yLabel, xLabel, chartTitle;
         Chart chart1;
@@ -27,13 +29,13 @@ namespace Forecasting.SES_DES
 
         private void InitializeSeries()
         {
-            Series swordsSerie = new Series { Name = "Swords data", Color = Color.Black, ChartType = SeriesChartType.Line };
-            Series smoothingSerie = new Series { Name = "Smoothing", Color = Color.Red, ChartType = SeriesChartType.Line };
-            Series forecastSerie = new Series { Name = "Forecast", Color = Color.Blue, ChartType = SeriesChartType.Line };
+            var swordsSerie = new Series { Name = "Swords data", Color = Color.Black, ChartType = SeriesChartType.Line };
+            var smoothingSerie = new Series { Name = "Smoothing", Color = Color.Red, ChartType = SeriesChartType.Line };
+            var forecastSerie = new Series { Name = "Forecast", Color = Color.Blue, ChartType = SeriesChartType.Line };
 
-            double[] alphaAndSse = ComputeAlphaAndSSE();
-            List<double> smoothingSequence = ComputeSmoothing(alphaAndSse[0]);
-            List<double> forecastingSequence = ComputeForecasting(smoothingSequence, alphaAndSse[0], 12);
+            Dictionary<string, double> alphaAndSse = ComputeAlphaAndSSE();
+            List<double> smoothingSequence = ComputeSmoothing(alphaAndSse[BEST_ALPHA]);
+            List<double> forecastingSequence = ComputeForecasting(smoothingSequence, alphaAndSse[BEST_ALPHA], 12);
 
             for (int i = 0; i < demands.Count; i++)
             {
@@ -52,8 +54,10 @@ namespace Forecasting.SES_DES
 
             xLabel.Text = "Months";
             yLabel.Text = "Demands";
-            chartTitle.Text = string.Format("Sword Forecasting SES/DES, best Alpha {0}, SSE {1}", alphaAndSse[0], alphaAndSse[1]);
+            chartTitle.Text = string.Format("Sword Forecasting SES/DES, best Alpha {0}, SSE {1}", alphaAndSse[BEST_ALPHA], alphaAndSse[SMALLEST_SSE]);
             chartTitle.Font = new Font("Verdana", 20);
+
+            chart1.Series.Clear();
             chart1.Series.Add(swordsSerie);
             chart1.Series.Add(smoothingSerie);
             chart1.Series.Add(forecastSerie);
@@ -82,11 +86,11 @@ namespace Forecasting.SES_DES
             return smoothing;
         }
 
-        public double[] ComputeAlphaAndSSE()
+        public Dictionary<string, double> ComputeAlphaAndSSE()
         {
             double smallestSSE = Double.MaxValue;
             double bestAlpha = 0;
-            double[] errorAndAlpha = new double[2];
+            var errorAndAlpha = new Dictionary<string, double>();
 
             for (double alpha = 0.001; alpha <= 1; alpha += 0.001)
             {
@@ -97,8 +101,8 @@ namespace Forecasting.SES_DES
                     bestAlpha = alpha;
                 }
             }
-            errorAndAlpha[0] = bestAlpha; // first position is for the alpha value
-            errorAndAlpha[1] = smallestSSE;// second position is for the sse value
+            errorAndAlpha.Add(BEST_ALPHA, bestAlpha); // first position is for the alpha value
+            errorAndAlpha.Add(SMALLEST_SSE, smallestSSE);// second position is for the sse value
             return errorAndAlpha;
         }
 

@@ -13,9 +13,9 @@ namespace KMeansClustering.Algorithms
         private readonly int iterations;
         private readonly int totalClusters;
 
-        private List<Observation> Centroids;
-        private List<Cluster> Clusters;
-        private Result result;
+        private List<Observation> Centroids { get; set; }
+        private List<Cluster> Clusters { get; set; }
+        private Result result { get; set; }
         private Random random = new Random();
 
         private List<Observation> Observations;

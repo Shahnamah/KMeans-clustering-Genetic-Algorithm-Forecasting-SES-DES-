@@ -25,7 +25,7 @@ namespace GeneticAlgorithm
             //			double.TryParse(Console.ReadLine(),out mutationRate);
             bool elitism = true;
             //Console.WriteLine("What is the populationSize");
-            int populationSize = 20;
+            int populationSize = 4;
             //				Convert.ToInt32(Console.ReadLine());
 
             //Console.WriteLine("What is the numIterations");
@@ -69,6 +69,7 @@ namespace GeneticAlgorithm
 
         private static double ComputeFitness(string individual)
         {
+            string hoi = Convert.ToString(13, 2);
             int x = Convert.ToInt32(individual, 2);
             return -Math.Pow(x, 2) + 7 * x;
         }
