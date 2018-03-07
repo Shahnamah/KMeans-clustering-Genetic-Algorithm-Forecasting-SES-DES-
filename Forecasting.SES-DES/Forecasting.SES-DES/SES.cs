@@ -13,13 +13,13 @@ namespace Forecasting.SES_DES
     {
         private const string BEST_ALPHA = "BestAlpha";
         private const string SMALLEST_SSE = "SmallestSse";
-        private List<double> demands = new List<double>();
+        private double[] demands;
         Label yLabel, xLabel, chartTitle;
         Chart chart1;
 
         public SES(Chart chart1, Label yLabel, Label xLabel, Label chartTitle)
         {
-            demands = DataImporter.DemandList;
+            demands = DataImporter.DemandList.ToArray();
             this.yLabel = yLabel;
             this.xLabel = xLabel;
             this.chartTitle = chartTitle;
@@ -29,15 +29,15 @@ namespace Forecasting.SES_DES
 
         private void InitializeSeries()
         {
-            var swordsSerie = new Series { Name = "Swords data", Color = Color.Black, ChartType = SeriesChartType.Line };
-            var smoothingSerie = new Series { Name = "Smoothing", Color = Color.Red, ChartType = SeriesChartType.Line };
-            var forecastSerie = new Series { Name = "Forecast", Color = Color.Blue, ChartType = SeriesChartType.Line };
+            var swordsSerie = new Series { Name = "Swords data", Color = Color.Black, ChartType = SeriesChartType.Line, MarkerStyle = MarkerStyle.Circle,MarkerSize = 6};
+            var smoothingSerie = new Series { Name = "Smoothing", Color = Color.Red, ChartType = SeriesChartType.Line, MarkerStyle = MarkerStyle.Circle, MarkerSize = 6 };
+            var forecastSerie = new Series { Name = "Forecast", Color = Color.Blue, ChartType = SeriesChartType.Line, MarkerStyle = MarkerStyle.Circle, MarkerSize = 6 };
 
-            Dictionary<string, double> alphaAndSse = ComputeAlphaAndSSE();
+            Dictionary<string, double> alphaAndSse = ComputeAlphaAndSse();
             List<double> smoothingSequence = ComputeSmoothing(alphaAndSse[BEST_ALPHA]);
             List<double> forecastingSequence = ComputeForecasting(smoothingSequence, alphaAndSse[BEST_ALPHA], 12);
 
-            for (int i = 0; i < demands.Count; i++)
+            for (int i = 0; i < demands.Length; i++)
             {
                 swordsSerie.Points.AddXY(i + 1, demands[i]);
             }
@@ -54,16 +54,18 @@ namespace Forecasting.SES_DES
 
             xLabel.Text = "Months";
             yLabel.Text = "Demands";
-            chartTitle.Text = string.Format("Sword Forecasting SES/DES, best Alpha {0}, SSE {1}", alphaAndSse[BEST_ALPHA], alphaAndSse[SMALLEST_SSE]);
+            chartTitle.Text = $"Sword Forecasting SES, best Alpha {alphaAndSse[BEST_ALPHA]}, SSE {alphaAndSse[SMALLEST_SSE]}";
             chartTitle.Font = new Font("Verdana", 20);
 
-            chart1.Series.Clear();
+            if (chart1.Series.Any())
+                chart1.Series.Clear();
+            
             chart1.Series.Add(swordsSerie);
             chart1.Series.Add(smoothingSerie);
             chart1.Series.Add(forecastSerie);
         }
 
-        public double InitSmoothValue()
+        private double InitSmoothValue()
         {
             double sumOfDataSeq = 0;
             for (int i = 0; i < 12; i++)
@@ -78,7 +80,7 @@ namespace Forecasting.SES_DES
             //Initialize list
             var smoothing = new List<double>();
             smoothing.Add(InitSmoothValue());
-            for (int i = 1; i < demands.Count; i++)
+            for (int i = 1; i < demands.Length; i++)
             {
                 double smoothValue = alpha * demands[i - 1] + (1 - alpha) * smoothing[i - 1];
                 smoothing.Add(smoothValue);
@@ -86,7 +88,7 @@ namespace Forecasting.SES_DES
             return smoothing;
         }
 
-        public Dictionary<string, double> ComputeAlphaAndSSE()
+        private Dictionary<string, double> ComputeAlphaAndSse()
         {
             double smallestSSE = Double.MaxValue;
             double bestAlpha = 0;
@@ -106,11 +108,11 @@ namespace Forecasting.SES_DES
             return errorAndAlpha;
         }
 
-        public List<double> ComputeForecasting(List<double> smoothSeq, double alpha, int timeinMonth)
+        private List<double> ComputeForecasting(List<double> smoothSeq, double alpha, int timeinMonth)
         {
             //Compute forecast smooth by using last demand and smooth values
             var forecasting = new List<double>();
-            double lastSmoothValue = alpha * demands[demands.Count - 1] + (1 - alpha)
+            double lastSmoothValue = alpha * demands[demands.Length - 1] + (1 - alpha)
                     * smoothSeq[smoothSeq.Count - 1];
             for (int i = 0; i < timeinMonth; i++)
             {
@@ -122,7 +124,7 @@ namespace Forecasting.SES_DES
         private double SSE(List<double> smoothSequence)
         {
             double sse = 0;
-            for (int i = 0; i < demands.Count; i++)
+            for (int i = 0; i < demands.Length; i++)
             {
                 sse += Math.Pow((demands[i] - smoothSequence[i]), 2);
             }

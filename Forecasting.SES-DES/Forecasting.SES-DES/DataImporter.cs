@@ -9,34 +9,41 @@ namespace Forecasting.SES_DES
 {
     public static class DataImporter
     {
-        private static char csvSeparator = ';';
+        private const char csvSeparator = ',';
 
-        public static List<double> DemandList
+        public static IEnumerable<double> DemandList
         {
             get
             {
-                List<double> demandList = new List<double>();
-                try
+                using (StreamReader reader = new StreamReader("SwordForecasting.csv"))
                 {
-                    using (StreamReader reader = new StreamReader("SwordForecasting.csv"))
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
                     {
-                        string line;
-                        while ((line = reader.ReadLine()) != null)
-                        {
-                            var demand = line.Split(csvSeparator)[1];
-                            demandList.Add(Convert.ToDouble(demand));
-                        }
+                        var demand = line.Split(csvSeparator)[1];
+                        yield return Convert.ToDouble(demand);
                     }
                 }
-                catch (FileNotFoundException fileNotFoundException)
+            }
+        }
+
+        public static IEnumerable<double> WalmartData
+        {
+            get
+            {
+                using (StreamReader reader = new StreamReader("forecastingWalmart.csv"))
                 {
-                    throw fileNotFoundException;
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        string storeNumber = line.Split(';')[0];
+                        string deptNumber = line.Split(';')[1];
+                        string demand = line.Split(';')[3];
+                        if (storeNumber.Equals("1"))
+                            if (deptNumber.Equals("2"))
+                                yield return Convert.ToDouble(demand);
+                    }
                 }
-                catch (Exception exception)
-                {
-                    throw exception;
-                }
-                return demandList;
             }
         }
     }

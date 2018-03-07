@@ -20,7 +20,6 @@ namespace Forecasting.SES_DES
 
         private void button1_Click(object sender, EventArgs e)
         {
-
             //SES
             new SES(chart1, yLabel, xLabel, chartTitle);
         }
