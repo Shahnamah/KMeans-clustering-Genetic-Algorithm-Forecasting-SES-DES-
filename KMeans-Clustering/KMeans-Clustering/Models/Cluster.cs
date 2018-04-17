@@ -66,7 +66,7 @@ namespace KMeansClustering.Models
                     //get the value of the observation item
                     double valueObservation = Observations[obs].Items[item];
                     //and sum it up on the total sum
-                    sum += Math.Pow((Centroid.Items[item] - valueObservation), 2.00);
+                    sum += Math.Pow(Centroid.Items[item] - valueObservation, 2.00);
                 }
             }
             return sum;

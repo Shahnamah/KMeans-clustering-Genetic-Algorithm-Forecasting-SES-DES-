@@ -27,7 +27,7 @@ namespace Forecasting.SES_DES
         private void button2_Click(object sender, EventArgs e)
         {
             //DES
-            new DES(chart1, yLabel, xLabel, chartTitle, 12);
+            new DES(chart1, yLabel, xLabel, chartTitle, 8);
         }
     }
 }

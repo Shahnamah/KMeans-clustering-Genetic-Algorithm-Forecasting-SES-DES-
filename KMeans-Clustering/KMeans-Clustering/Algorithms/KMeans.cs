@@ -49,16 +49,12 @@ namespace KMeansClustering.Algorithms
                     Clusters.Add(new Cluster(i, observation));
                 }
 
-                //multi-threading, for each observation, calculate the distance from the observation to all the existing centroids, and assign the observation to the nearest centroid.
-                Parallel.For(0, Observations.Count, index =>
+                foreach (var observation in Observations)
                 {
-                    lock (Observations[index])
-                    {
-                        CalculateDistance(Observations[index]);
-                    }
-                });
+                    CalculateDistance(observation);
+                }
                 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 10; i++)
                 {
                     int counter = 0;
                     //for each cluster, recalculate the center and clear all observations.
@@ -75,10 +71,7 @@ namespace KMeansClustering.Algorithms
                         //for each cluster with new centroids, again calculate the distances from the observations to the new centroids and assign the observations to the nearest centroids.
                         Parallel.For(0, Observations.Count, index =>
                         {
-                            lock (Observations[index])
-                            {
-                                CalculateDistance(Observations[index]);
-                            }
+                            CalculateDistance(Observations[index]);
                         });
                     }
                 }

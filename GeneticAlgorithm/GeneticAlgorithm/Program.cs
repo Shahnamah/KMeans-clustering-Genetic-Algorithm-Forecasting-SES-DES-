@@ -18,31 +18,34 @@ namespace GeneticAlgorithm
             */
 
             //Console.WriteLine("What is the crossoverRate");
-            double crossoverRate = 0.8;
+            double crossoverRate = 0.85;
             //			double.TryParse (Console.ReadLine (), out crossoverRate);
             //Console.WriteLine("What is the mutationRate");
-            double mutationRate = 0.05;
+            double mutationRate = 0.01;
             //			double.TryParse(Console.ReadLine(),out mutationRate);
             bool elitism = true;
             //Console.WriteLine("What is the populationSize");
-            int populationSize = 4;
+            int populationSize = 10;
             //				Convert.ToInt32(Console.ReadLine());
 
             //Console.WriteLine("What is the numIterations");
-            int numIterations = 100;
+            int numIterations = 50;
             //				Convert.ToInt32(Console.ReadLine());
 
-            String individual = CreateIndividual();
-            double fitness = ComputeFitness(individual);
 
-            GeneticAlgorithm<string> fakeProblemGA = new GeneticAlgorithm<string>(crossoverRate, mutationRate, elitism, populationSize, numIterations); // CHANGE THE GENERIC TYPE (NOW IT'S INT AS AN EXAMPLE) AND THE PARAMETERS VALUES
-            var solution = fakeProblemGA.Run(CreateIndividual, ComputeFitness, SelectTwoParents, Crossover, Mutation);
+            for (int i= 0; i< 100; i++)
+            {
+                String individual = CreateIndividual();
+                double fitness = ComputeFitness(individual);
+                GeneticAlgorithm<string> fakeProblemGA = new GeneticAlgorithm<string>(crossoverRate, mutationRate, elitism, populationSize, numIterations); // CHANGE THE GENERIC TYPE (NOW IT'S INT AS AN EXAMPLE) AND THE PARAMETERS VALUES
+                var solution = fakeProblemGA.Run(CreateIndividual, ComputeFitness, SelectTwoParents, Crossover, Mutation);
+                Console.WriteLine("Fitness: ");
+                Console.WriteLine(ComputeFitness(solution.Item1));
 
-            Console.WriteLine("Fitness: ");
-            Console.WriteLine(ComputeFitness(solution.Item1));
+                Console.WriteLine("Solution: ");
+                Console.WriteLine(Convert.ToInt32(solution.Item1, 2));
+            }
 
-            Console.WriteLine("Solution: ");
-            Console.WriteLine(Convert.ToInt32(solution.Item1, 2));
 
             Console.Read();
         }
@@ -56,20 +59,11 @@ namespace GeneticAlgorithm
                 individual = individual + random.Next(0, 2);
             }
             System.Threading.Thread.Sleep(50);
-            //int lol = Convert.ToInt32("10001", 2);
-            //int inde = Convert.ToInt32(individual, 2);
-
-
-            //byte a = 13;
-            //byte b = 10;
-            //string yourByteString = Convert.ToString(a, 2).PadLeft(5, '0');
-            //int afaf = Convert.ToInt32(yourByteString, 2);
             return individual;
         }
 
         private static double ComputeFitness(string individual)
         {
-            string hoi = Convert.ToString(13, 2);
             int x = Convert.ToInt32(individual, 2);
             return -Math.Pow(x, 2) + 7 * x;
         }
@@ -90,13 +84,13 @@ namespace GeneticAlgorithm
                     tempFitnesses.Add(f + Math.Abs(lowestFitness))
                 );
 
+            double sumOfFitness = tempFitnesses.Sum();
             for (int i = 0; i < 2; i++)
             {
-                double sumOfFitness = tempFitnesses.Sum();
                 
                 for (int j = 0; j < tempFitnesses.Count; j++)
                 {
-                    probability[j] = (tempFitnesses[j] / sumOfFitness);
+                    probability[j] = tempFitnesses[j] / sumOfFitness;
                 }
 
                 double roullete = random.NextDouble();

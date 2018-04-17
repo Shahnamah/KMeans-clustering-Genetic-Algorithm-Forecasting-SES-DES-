@@ -24,7 +24,6 @@ namespace Forecasting.SES_DES
         public DES(Chart chart1, Label yLabel, Label xLabel, Label chartTitle, int forecastingTimeInMonths)
         {
             demands = DataImporter.DemandList.ToArray();
-            //demands = DataImporter.WalmartData.ToArray();
             this.yLabel = yLabel;
             this.xLabel = xLabel;
             this.chartTitle = chartTitle;

@@ -115,7 +115,7 @@ namespace Forecasting.SES_DES
             double bestAlpha = 0;
             var errorAndAlpha = new Dictionary<string, double>();
 
-            for (double alpha = 0.001; alpha <= 1; alpha += 0.001)
+            for (double alpha = 0; alpha <= 1; alpha += 0.001)
             {
                 double sse = SSE(ComputeSmoothing(alpha));
                 if (sse < smallestSSE)
